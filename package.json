@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
+    "dev:admin": "npm --prefix admin run dev",
+    "build": "vite build && npm run build:admin",
+    "build:admin": "npm --prefix admin ci && npm --prefix admin run build -- --outDir ../dist/admin --emptyOutDir",
     "preview": "vite preview",
     "format": "oxfmt"
   },
