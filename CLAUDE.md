@@ -19,8 +19,9 @@ Run these from the repo root:
 
 ```bash
 npm install && npm --prefix admin install
-npm run dev          # storefront, port 8443 (or $PORT)
-npm run dev:admin    # admin, port 5174
+npm run dev          # both: storefront :8443 + admin :5174 (via concurrently)
+npm run dev:site     # storefront only
+npm run dev:admin    # admin only
 npm run build        # storefront -> dist/, then admin -> dist/admin/ (runs `npm ci` in admin/)
 npm run preview
 npm run format       # oxfmt (storefront)
@@ -28,7 +29,7 @@ npm run format       # oxfmt (storefront)
 
 There is no test suite and no lint script. Type checking is not part of `build`, so run it on its own with `npx tsc --noEmit` (in each app).
 
-For local development, run both dev servers. The storefront dev server proxies `/admin` to `127.0.0.1:5174`, so `http://localhost:8443/admin/` reaches the admin app. If you open the admin dev server at its bare root, a dev-only plugin in `admin/vite.config.ts` redirects you to `/admin/`.
+`npm run dev` starts both dev servers. The storefront dev server proxies `/admin` to `127.0.0.1:5174`, so `http://localhost:8443/admin/` reaches the admin app. If you open the admin dev server at its bare root, a dev-only plugin in `admin/vite.config.ts` redirects you to `/admin/`.
 
 ## Architecture
 
