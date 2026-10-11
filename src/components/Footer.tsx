@@ -59,7 +59,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links columns */}
+   
           <div>
             <h4 className="font-display font-bold text-xs tracking-widest uppercase text-[#A8C879] mb-4">
               Navigate
