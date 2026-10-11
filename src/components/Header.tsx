@@ -31,7 +31,7 @@ function Logo({ light = false }: { light?: boolean }) {
     </Link>
   )
 }
-//lets
+//lets go
 
 const navLinks = [
   { label: 'Home', to: '/' },
