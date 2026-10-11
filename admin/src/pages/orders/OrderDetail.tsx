@@ -51,19 +51,19 @@ export default function OrderDetail() {
 
   return (
     <Layout>
-      <h1 className="font-display font-black text-2xl uppercase text-[#22231F] mb-1">Order {order.order_number}</h1>
+      <h1 className="font-display font-black text-xl sm:text-2xl uppercase break-words text-[#22231F] mb-1">Order {order.order_number}</h1>
       <p className="font-body text-sm text-[#676A61] mb-6">Placed {formatNepaliDateTime(order.created_at)}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+        <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
           <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Items</h2>
           <div className="space-y-3">
             {order.items?.map((item) => (
-              <div key={item.id} className="flex justify-between font-body text-sm border-b border-[#E8DDCD] pb-2">
+              <div key={item.id} className="flex justify-between gap-3 font-body text-sm border-b border-[#E8DDCD] pb-2">
                 <span className="text-[#676A61]">
                   {item.product_name} ({item.variant_label}) × {item.quantity}
                 </span>
-                <span className="text-[#22231F] font-semibold">NPR {item.line_total_npr}</span>
+                <span className="shrink-0 text-[#22231F] font-semibold">NPR {item.line_total_npr}</span>
               </div>
             ))}
           </div>
@@ -74,11 +74,11 @@ export default function OrderDetail() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
             <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Customer</h2>
-            <div className="space-y-1 font-body text-sm text-[#676A61]">
+            <div className="space-y-1 font-body text-sm text-[#676A61] break-words">
               <p className="text-[#22231F] font-semibold">{order.customer_name}</p>
-              <p>{order.customer_phone}</p>
+              <p><a href={`tel:${order.customer_phone}`} className="text-[#264F24] hover:underline">{order.customer_phone}</a></p>
               {order.customer_email && <p>{order.customer_email}</p>}
               <p>{order.shipping_address}</p>
               {order.city && <p>{order.city}</p>}
@@ -86,7 +86,7 @@ export default function OrderDetail() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
             <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Payment</h2>
             <p className="font-body text-sm text-[#676A61] mb-3">
               Method: <span className="text-[#22231F] font-semibold capitalize">{order.payment_method ?? '—'}</span>
@@ -96,7 +96,7 @@ export default function OrderDetail() {
               value={order.payment_status}
               disabled={updating}
               onChange={(e) => handlePaymentStatusChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-sm capitalize"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-base sm:text-sm bg-white capitalize"
             >
               {PAYMENT_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -111,13 +111,13 @@ export default function OrderDetail() {
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
             <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Order Status</h2>
             <select
               value={order.status}
               disabled={updating}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-sm capitalize"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-base sm:text-sm bg-white capitalize"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>

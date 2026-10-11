@@ -35,11 +35,11 @@ export default function EnquiryDetail() {
 
   return (
     <Layout>
-      <h1 className="font-display font-black text-2xl uppercase text-[#22231F] mb-1">{enquiry.name}</h1>
+      <h1 className="font-display font-black text-xl sm:text-2xl uppercase break-words text-[#22231F] mb-1">{enquiry.name}</h1>
       <p className="font-body text-sm text-[#676A61] mb-6">Received {formatNepaliDateTime(enquiry.created_at)}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+        <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
           <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-2">
             {enquiry.subject || enquiry.enquiry_type}
           </h2>
@@ -48,28 +48,28 @@ export default function EnquiryDetail() {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
             <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Contact Details</h2>
-            <div className="space-y-1 font-body text-sm text-[#676A61]">
+            <div className="space-y-1 font-body text-sm text-[#676A61] break-words">
               <p>
                 <a href={`mailto:${enquiry.email}`} className="text-[#264F24] hover:underline">
                   {enquiry.email}
                 </a>
               </p>
-              {enquiry.phone && <p>{enquiry.phone}</p>}
+              {enquiry.phone && <p><a href={`tel:${enquiry.phone}`} className="text-[#264F24] hover:underline">{enquiry.phone}</a></p>}
               {enquiry.org && <p>{enquiry.org}</p>}
               {enquiry.contact_method && <p>Prefers: {enquiry.contact_method}</p>}
               <p className="text-xs mt-2">{enquiry.consent ? '✓ Consented to be contacted' : 'No consent recorded'}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-6">
+          <div className="bg-white rounded-2xl border border-[#E8DDCD] p-4 sm:p-6">
             <h2 className="font-display font-black text-sm uppercase text-[#22231F] mb-4">Status</h2>
             <select
               value={enquiry.status}
               disabled={updating}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-sm capitalize"
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E8DDCD] font-body text-base sm:text-sm bg-white capitalize"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>

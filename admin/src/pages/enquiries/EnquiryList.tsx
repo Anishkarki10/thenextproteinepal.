@@ -28,15 +28,15 @@ export default function EnquiryList() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display font-black text-2xl uppercase text-[#22231F]">Enquiries</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h1 className="font-display font-black text-xl sm:text-2xl uppercase text-[#22231F]">Enquiries</h1>
         <select
           value={status}
           onChange={(e) => {
             setStatus(e.target.value)
             setPage(1)
           }}
-          className="px-4 py-2 rounded-xl border border-[#E8DDCD] font-body text-sm"
+          className="px-4 py-2.5 md:py-2 rounded-xl border border-[#E8DDCD] bg-white font-body text-base sm:text-sm capitalize"
         >
           {STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -49,7 +49,37 @@ export default function EnquiryList() {
       {error && <p className="font-body text-sm text-[#8B4A2E] mb-4">{error}</p>}
       {loading && <p className="font-body text-sm text-[#676A61]">Loading…</p>}
 
-      <div className="bg-white rounded-2xl border border-[#E8DDCD] overflow-hidden">
+      <div className="md:hidden space-y-3">
+        {enquiries.map((enquiry) => (
+          <Link
+            key={enquiry.id}
+            to={`/enquiries/${enquiry.id}`}
+            className={`block rounded-2xl border p-4 active:border-[#264F24] ${
+              enquiry.status === 'new' ? 'bg-[#EEF2E6] border-[#264F24]/30' : 'bg-white border-[#E8DDCD]'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-body text-sm font-semibold text-[#264F24] truncate">{enquiry.name}</div>
+                <div className="font-body text-xs text-[#676A61] truncate">{enquiry.email}</div>
+              </div>
+              <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#F5EDE1] font-body text-xs text-[#22231F] capitalize">
+                {enquiry.status}
+              </span>
+            </div>
+            {enquiry.subject && <div className="mt-2 font-body text-sm text-[#22231F] line-clamp-2">{enquiry.subject}</div>}
+            <div className="flex justify-between gap-3 mt-2 font-body text-xs text-[#676A61]">
+              <span className="truncate">{enquiry.enquiry_type}</span>
+              <span className="shrink-0">{formatNepaliDate(enquiry.created_at)}</span>
+            </div>
+          </Link>
+        ))}
+        {!loading && enquiries.length === 0 && (
+          <p className="py-8 text-center font-body text-sm text-[#676A61]">No enquiries found.</p>
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white rounded-2xl border border-[#E8DDCD] overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-[#F5EDE1]">
             <tr>
@@ -87,12 +117,12 @@ export default function EnquiryList() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-8 h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
+              className={`w-10 h-10 md:w-8 md:h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
             >
               {p}
             </button>

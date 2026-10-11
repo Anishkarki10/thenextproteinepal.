@@ -55,7 +55,7 @@ export default function AuditLog() {
 
   return (
     <Layout>
-      <h1 className="font-display font-black text-2xl uppercase text-[#22231F] mb-2">Audit Log</h1>
+      <h1 className="font-display font-black text-xl sm:text-2xl uppercase text-[#22231F] mb-2">Audit Log</h1>
       <p className="font-body text-sm text-[#676A61] mb-6">
         A record of every admin action — product changes, order/enquiry status updates.
       </p>
@@ -63,7 +63,26 @@ export default function AuditLog() {
       {error && <p className="font-body text-sm text-[#8B4A2E] mb-4">{error}</p>}
       {loading && <p className="font-body text-sm text-[#676A61]">Loading…</p>}
 
-      <div className="bg-white rounded-2xl border border-[#E8DDCD] overflow-hidden">
+      <div className="md:hidden space-y-3">
+        {entries.map((entry) => (
+          <div key={entry.id} className="bg-white rounded-2xl border border-[#E8DDCD] p-4">
+            <div className="font-body text-sm font-semibold text-[#264F24]">{ACTION_LABELS[entry.action] || entry.action}</div>
+            <div className="font-body text-xs text-[#676A61] mt-0.5 break-all">
+              {entry.admin_email}
+              {entry.target_type && entry.target_id ? ` · ${entry.target_type} #${entry.target_id}` : ''}
+            </div>
+            {describeDetails(entry) && (
+              <div className="mt-2 font-body text-xs text-[#22231F] break-words">{describeDetails(entry)}</div>
+            )}
+            <div className="mt-2 font-body text-xs text-[#676A61]">{formatNepaliDateTime(entry.created_at)}</div>
+          </div>
+        ))}
+        {!loading && entries.length === 0 && (
+          <p className="py-8 text-center font-body text-sm text-[#676A61]">No admin actions recorded yet.</p>
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white rounded-2xl border border-[#E8DDCD] overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-[#F5EDE1]">
             <tr>
@@ -98,12 +117,12 @@ export default function AuditLog() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-8 h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
+              className={`w-10 h-10 md:w-8 md:h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
             >
               {p}
             </button>

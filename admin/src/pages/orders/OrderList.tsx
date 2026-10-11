@@ -28,15 +28,15 @@ export default function OrderList() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display font-black text-2xl uppercase text-[#22231F]">Orders</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h1 className="font-display font-black text-xl sm:text-2xl uppercase text-[#22231F]">Orders</h1>
         <select
           value={status}
           onChange={(e) => {
             setStatus(e.target.value)
             setPage(1)
           }}
-          className="px-4 py-2 rounded-xl border border-[#E8DDCD] font-body text-sm"
+          className="px-4 py-2.5 md:py-2 rounded-xl border border-[#E8DDCD] bg-white font-body text-base sm:text-sm capitalize"
         >
           {STATUSES.map((s) => (
             <option key={s} value={s}>
@@ -49,7 +49,33 @@ export default function OrderList() {
       {error && <p className="font-body text-sm text-[#8B4A2E] mb-4">{error}</p>}
       {loading && <p className="font-body text-sm text-[#676A61]">Loading…</p>}
 
-      <div className="bg-white rounded-2xl border border-[#E8DDCD] overflow-hidden">
+      <div className="md:hidden space-y-3">
+        {orders.map((order) => (
+          <Link
+            key={order.id}
+            to={`/orders/${order.id}`}
+            className="block bg-white rounded-2xl border border-[#E8DDCD] p-4 active:border-[#264F24]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-body text-sm font-semibold text-[#264F24] break-all">{order.order_number}</div>
+                <div className="font-body text-sm text-[#22231F] truncate">{order.customer_name}</div>
+              </div>
+              <div className="shrink-0 font-body text-sm font-semibold text-[#264F24]">NPR {order.total_npr}</div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mt-3 font-body text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-[#F5EDE1] text-[#22231F] capitalize">{order.status.replace('_', ' ')}</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#F5EDE1] text-[#22231F] capitalize">{order.payment_status}</span>
+              <span className="ml-auto text-[#676A61]">{formatNepaliDate(order.created_at)}</span>
+            </div>
+          </Link>
+        ))}
+        {!loading && orders.length === 0 && (
+          <p className="py-8 text-center font-body text-sm text-[#676A61]">No orders found.</p>
+        )}
+      </div>
+
+      <div className="hidden md:block bg-white rounded-2xl border border-[#E8DDCD] overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-[#F5EDE1]">
             <tr>
@@ -88,12 +114,12 @@ export default function OrderList() {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-8 h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
+              className={`w-10 h-10 md:w-8 md:h-8 rounded-full font-body text-sm ${p === page ? 'bg-[#264F24] text-white' : 'bg-white border border-[#E8DDCD]'}`}
             >
               {p}
             </button>
