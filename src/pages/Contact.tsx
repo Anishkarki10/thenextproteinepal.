@@ -174,7 +174,7 @@ export default function Contact() {
                         <circle cx="12" cy="10" r="3" />
                       </svg>
                     ),
-                    label: 'Address',
+                    label: 'Address ',
                     value: 'Kusunti-14, Lalitpur, Nepal',
                     href: 'https://maps.google.com/?q=Kusunti+Lalitpur+Nepal',
                   },
