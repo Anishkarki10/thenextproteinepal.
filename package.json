@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build && npm --prefix ../admin install && npm --prefix ../admin run build && rm -rf dist/admin && cp -r ../admin/dist dist/admin",
-    "build:site-only": "vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "format": "oxfmt"
   },
