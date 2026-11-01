@@ -89,6 +89,12 @@ export default function OrderStatus() {
               </div>
               <div className="space-y-2 font-body text-sm text-[#676A61] mb-4">
                 <p>Payment: <span className="font-semibold text-[#22231F]">{order.payment_status}</span></p>
+                {order.delivery_zone && (
+                  <p>
+                    Delivery ({order.delivery_zone === 'inside_valley' ? 'Inside Valley' : 'Outside Valley'}):{' '}
+                    <span className="font-semibold text-[#22231F]">NPR {order.delivery_charge_npr}</span>
+                  </p>
+                )}
                 <p>Total: <span className="font-semibold text-[#22231F]">NPR {order.total_npr}</span></p>
                 <p>Placed: {formatNepaliDateTime(order.created_at)}</p>
               </div>

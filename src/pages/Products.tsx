@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { api, type Product } from '../lib/api'
+import { api, currentPrice, type Product } from '../lib/api'
 import { useCart } from '../context/CartContext'
+import PriceTag from '../components/PriceTag'
 
 export default function Products() {
   const [products, setProducts] = useState<Product[]>([])
@@ -24,7 +25,8 @@ export default function Products() {
     productSlug: product.slug,
     productName: product.name,
     variantLabel: variant.label,
-    unitPriceNpr: variant.price_npr as number,
+    unitPriceNpr: currentPrice(variant) as number,
+    listPriceNpr: variant.price_npr as number,
     image: product.images[0] ? api.imageUrl(product.images[0].url) : undefined,
   })
 
@@ -110,7 +112,7 @@ export default function Products() {
                         </div>
                         {retailVariant?.price_npr != null && (
                           <div className="text-right flex-shrink-0">
-                            <div className="font-display font-black text-2xl text-[#264F24]">NPR {retailVariant.price_npr}</div>
+                            <PriceTag variant={retailVariant} discount={product.discount} align="right" />
                             <div className="font-body text-xs text-[#676A61]">{retailVariant.label} retail pack</div>
                           </div>
                         )}

@@ -62,12 +62,30 @@ export default function OrderDetail() {
               <div key={item.id} className="flex justify-between gap-3 font-body text-sm border-b border-[#E8DDCD] pb-2">
                 <span className="text-[#676A61]">
                   {item.product_name} ({item.variant_label}) × {item.quantity}
+                  {item.discount_percent != null && (
+                    <span className="ml-1.5 text-[#8B4A2E] font-semibold">
+                      ({item.discount_percent}% off, NPR {item.unit_price_npr} each)
+                    </span>
+                  )}
                 </span>
                 <span className="shrink-0 text-[#22231F] font-semibold">NPR {item.line_total_npr}</span>
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-4 pt-4 border-t border-[#E8DDCD]">
+          <div className="space-y-1 mt-4 pt-4 border-t border-[#E8DDCD] font-body text-sm">
+            <div className="flex justify-between">
+              <span className="text-[#676A61]">Subtotal</span>
+              <span className="text-[#22231F] font-semibold">NPR {order.subtotal_npr}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#676A61]">
+                Delivery
+                {order.delivery_zone && ` (${order.delivery_zone === 'inside_valley' ? 'Inside Valley' : 'Outside Valley'})`}
+              </span>
+              <span className="text-[#22231F] font-semibold">NPR {order.delivery_charge_npr}</span>
+            </div>
+          </div>
+          <div className="flex justify-between mt-3 pt-3 border-t border-[#E8DDCD]">
             <span className="font-body font-semibold text-[#22231F]">Total</span>
             <span className="font-display font-black text-xl text-[#264F24]">NPR {order.total_npr}</span>
           </div>

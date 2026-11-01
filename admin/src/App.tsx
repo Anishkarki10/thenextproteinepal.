@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import ProductList from './pages/products/ProductList'
 import ProductForm from './pages/products/ProductForm'
+import DiscountList from './pages/discounts/DiscountList'
 import OrderList from './pages/orders/OrderList'
 import OrderDetail from './pages/orders/OrderDetail'
 import EnquiryList from './pages/enquiries/EnquiryList'
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/products" element={<ProtectedRoute><ProductList /></ProtectedRoute>} />
           <Route path="/products/new" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
           <Route path="/products/:id/edit" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+          <Route path="/discounts" element={<ProtectedRoute><DiscountList /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><OrderList /></ProtectedRoute>} />
           <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
           <Route path="/enquiries" element={<ProtectedRoute><EnquiryList /></ProtectedRoute>} />

@@ -20,6 +20,7 @@ export interface ProductVariant {
   label: string
   pack_size: string
   price_npr: number | null
+  discounted_price_npr?: number | null // read-only; set while the product has an active discount
   is_enquiry_only: boolean
   stock_qty: number
   sort_order: number
@@ -43,6 +44,7 @@ export interface Product {
   is_available: boolean
   images: ProductImage[]
   variants: ProductVariant[]
+  discount?: { percent: number; label: string | null; ends_at: string | null } | null // read-only, active one
   ingredients?: Record<string, string[]> | null
   nutrition_facts?: { label: string; value: string }[] | null
   allergen_info?: string | null
@@ -58,6 +60,7 @@ export interface OrderItem {
   product_name: string
   variant_label: string | null
   unit_price_npr: number
+  discount_percent: number | null
   quantity: number
   line_total_npr: number
 }
@@ -74,6 +77,8 @@ export interface Order {
   status: string
   payment_method: string | null
   payment_status: string
+  delivery_zone: 'inside_valley' | 'outside_valley' | null
+  delivery_charge_npr: number
   subtotal_npr: number
   total_npr: number
   created_at: string
@@ -88,6 +93,26 @@ export interface DashboardStats {
   orders_by_status: Record<string, number>
   recent_orders: Order[]
   unread_enquiries: number
+}
+
+export interface Discount {
+  id: number
+  product_id: number
+  product_name: string | null
+  percent: number
+  label: string | null
+  starts_at: string
+  ends_at: string | null
+  status: 'scheduled' | 'active' | 'expired'
+  created_at: string
+}
+
+export interface DiscountPayload {
+  product_id: number
+  percent: number
+  label: string | null
+  starts_at: string // ISO 8601 with offset
+  ends_at: string | null
 }
 
 export interface Enquiry {
@@ -172,6 +197,13 @@ export const api = {
   },
   deleteImage: (productId: number, imageId: number) =>
     request<void>(`/api/admin/products/${productId}/images/${imageId}`, { method: 'DELETE' }),
+
+  listDiscounts: () => request<Discount[]>('/api/admin/discounts'),
+  createDiscount: (payload: DiscountPayload) =>
+    request<Discount>('/api/admin/discounts', { method: 'POST', body: JSON.stringify(payload) }),
+  updateDiscount: (id: number, payload: DiscountPayload) =>
+    request<Discount>(`/api/admin/discounts/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteDiscount: (id: number) => request<void>(`/api/admin/discounts/${id}`, { method: 'DELETE' }),
 
   listOrders: (params: { status?: string; page?: number } = {}) => {
     const qs = new URLSearchParams()

@@ -6,6 +6,7 @@ import { api } from '../lib/api'
 const navLinks = [
   { label: 'Dashboard', to: '/' },
   { label: 'Products', to: '/products' },
+  { label: 'Discounts', to: '/discounts' },
   { label: 'Orders', to: '/orders' },
   { label: 'Enquiries', to: '/enquiries' },
   { label: 'Audit Log', to: '/audit-log' },

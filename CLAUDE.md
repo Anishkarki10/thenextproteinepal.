@@ -27,7 +27,7 @@ npm run preview
 npm run format       # oxfmt (storefront)
 ```
 
-There is no test suite and no lint script. Type checking is not part of `build`, so run it on its own with `npx tsc --noEmit` (in each app).
+Unit tests use Vitest (`npm test`, configured in the root `vitest.config.ts`). They run tests for both apps (`src/**/*.test.ts(x)` and `admin/src/**/*.test.ts(x)`) in a Node environment, and components are rendered with `react-dom/server`. Run a single file with `npx vitest run src/lib/delivery.test.ts`. There is no lint script. Type checking is not part of `build`, so run it on its own with `npx tsc --noEmit` (in each app).
 
 Both dev servers use `strictPort`, so they fail instead of moving to another port if theirs is busy. The `PORT` env var overrides the port.
 
@@ -38,6 +38,7 @@ Both dev servers use `strictPort`, so they fail instead of moving to another por
 - **API layer**: each app has a single `src/lib/api.ts` that holds every endpoint as a method on an `api` object, plus the TypeScript types for backend entities (Product, ProductVariant, Order, Enquiry, …). The two files are independent copies with slightly different types, so a backend schema change usually means updating both. `imageUrl()` turns relative image paths from the backend into absolute URLs.
 - **Admin auth**: a JWT is stored in localStorage under `tnp_admin_token` and sent as a Bearer token. On any 401, `request()` clears the token and does a hard redirect to `/admin/login`. The `/admin` prefix is hardcoded because a `window.location` redirect ignores the router's `basename`. Routes are wrapped in `ProtectedRoute` and `AuthContext`.
 - **Cart**: `src/context/CartContext.tsx` is a reducer persisted to localStorage under `tnp_cart`. Items are keyed by **variant id**, not product id, because orders are placed per variant (`items: { variant_id, quantity }[]`). Variants with `is_enquiry_only` or a null `price_npr` can't be bought.
+- **Discounts**: the backend sends `discounted_price_npr` on each variant and `discount` on each product while a discount is active. Storefront prices go through `currentPrice()` in `lib/api.ts` and `components/PriceTag.tsx`. On load, `CartContext` refreshes the prices of saved cart items from `/api/products`, so a discount that started or ended since an item was added still shows the right price. Admins manage discounts on `admin/src/pages/discounts/DiscountList.tsx`; its datetime inputs are always in Nepal time (sent with `+05:45`).
 - **Payments**: `Checkout` creates the order, then calls `initiateEsewa` (which returns form fields to POST to eSewa) or `initiateStripe` (which returns a redirect URL). The gateways return to `/payment/{esewa|stripe}/return`, and `PaymentReturn` confirms the payment through the backend callback endpoints. Customers look up an order at `/order/:orderNumber` using their phone number.
 - **Forms (storefront)**: Checkout, Contact and Wholesale validate with `src/lib/validation.ts`. Their errors are a `Record<field, message>`, and `focusFirstError` looks up each field by **element id**, so an input's `id` must match its error key.
 - **Dates**: show all timestamps in Nepal time with `lib/datetime.ts` (`formatNepaliDateTime` / `formatNepaliDate`). This file is identical in both apps.

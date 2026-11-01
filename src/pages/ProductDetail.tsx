@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { api, type Product, type ProductVariant } from '../lib/api'
+import { api, currentPrice, type Product, type ProductVariant } from '../lib/api'
 import { useCart } from '../context/CartContext'
+import PriceTag from '../components/PriceTag'
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
@@ -57,7 +58,8 @@ export default function ProductDetail() {
         productSlug: product.slug,
         productName: product.name,
         variantLabel: selectedVariant.label,
-        unitPriceNpr: selectedVariant.price_npr,
+        unitPriceNpr: currentPrice(selectedVariant) as number,
+        listPriceNpr: selectedVariant.price_npr,
         image: gallery[0] ? api.imageUrl(gallery[0].url) : undefined,
       },
       quantity,
@@ -156,7 +158,7 @@ export default function ProductDetail() {
                         <div className="font-body text-xs text-[#676A61]">
                           {variant.is_enquiry_only || variant.price_npr == null
                             ? 'Enquire for Wholesale'
-                            : `NPR ${variant.price_npr} (Retail)`}
+                            : `NPR ${currentPrice(variant)} (Retail)`}
                         </div>
                       </button>
                     ))}
@@ -167,7 +169,12 @@ export default function ProductDetail() {
               {/* Price */}
               {selectedVariant && !selectedVariant.is_enquiry_only && selectedVariant.price_npr != null ? (
                 <div className="mb-6">
-                  <div className="font-display font-black text-3xl text-[#264F24]">NPR {selectedVariant.price_npr}</div>
+                  <PriceTag
+                    variant={selectedVariant}
+                    discount={product.discount}
+                    className="font-display font-black text-3xl text-[#264F24]"
+                    showEnds
+                  />
                   <p className="font-body text-xs text-[#676A61]">Retail price for {selectedVariant.label} pack</p>
                 </div>
               ) : (

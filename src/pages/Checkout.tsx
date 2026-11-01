@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { roundNpr, useCart } from '../context/CartContext'
 import { api } from '../lib/api'
+import { DELIVERY_ZONES, deliveryChargeFor, type DeliveryZone } from '../lib/delivery'
 import { focusFirstError, isValidPhone } from '../lib/validation'
 
 const PAYMENT_LABELS: Record<'esewa' | 'stripe' | 'cod', string> = {
@@ -36,6 +37,7 @@ export default function Checkout() {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: '', notes: '' })
+  const [deliveryZone, setDeliveryZone] = useState<DeliveryZone | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<'esewa' | 'stripe' | 'cod'>(ENABLED_METHODS[0])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -50,6 +52,7 @@ export default function Checkout() {
     if (!form.phone.trim()) e.phone = 'Phone is required'
     else if (!isValidPhone(form.phone)) e.phone = 'Enter a valid phone number (at least 10 digits, or 7 digits for a landline)'
     if (!form.address.trim()) e.address = 'Shipping address is required'
+    if (!deliveryZone) e.delivery_zone = 'Choose a delivery area'
     return e
   }
 
@@ -77,6 +80,7 @@ export default function Checkout() {
         },
         items: items.map((i) => ({ variant_id: i.variantId, quantity: i.quantity })),
         payment_method: paymentMethod,
+        delivery_zone: deliveryZone as DeliveryZone,
         notes: form.notes || undefined,
       })
 
@@ -109,6 +113,8 @@ export default function Checkout() {
       </div>
     )
   }
+
+  const deliveryCharge = deliveryChargeFor(deliveryZone)
 
   const inputClass = (err?: string) =>
     `w-full px-4 py-3 rounded-xl border font-body text-sm text-[#22231F] placeholder:text-[#676A61] focus:outline-none focus:ring-2 transition-colors ${
@@ -152,6 +158,49 @@ export default function Checkout() {
                 </label>
                 <textarea id="address" autoComplete="street-address" value={form.address} onChange={set('address')} rows={3} className={inputClass(errors.address)} />
                 {errors.address && <p className="mt-1 font-body text-xs text-[#8B4A2E]">{errors.address}</p>}
+              </div>
+
+              <div>
+                <p className="block font-body text-sm font-semibold text-[#22231F] mb-1.5">
+                  Delivery Area <span className="text-[#264F24]">*</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Delivery area">
+                  {(Object.keys(DELIVERY_ZONES) as DeliveryZone[]).map((zone, i) => {
+                    const z = DELIVERY_ZONES[zone]
+                    const selected = deliveryZone === zone
+                    return (
+                      <button
+                        key={zone}
+                        id={i === 0 ? 'delivery_zone' : undefined}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => {
+                          setDeliveryZone(zone)
+                          setErrors(({ delivery_zone: _, ...rest }) => rest)
+                        }}
+                        className={`py-3 px-4 rounded-xl border-2 text-left transition-colors ${
+                          selected
+                            ? 'border-[#264F24] bg-[#264F24]/5'
+                            : errors.delivery_zone
+                              ? 'border-[#8B4A2E]'
+                              : 'border-[#E8DDCD] hover:border-[#264F24]/50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`font-body font-bold text-sm ${selected ? 'text-[#264F24]' : 'text-[#22231F]'}`}>{z.label}</span>
+                          <span className="font-body font-semibold text-sm text-[#264F24]">NPR {z.chargeNpr}</span>
+                        </div>
+                        <div className="font-body text-xs text-[#676A61] mt-0.5">{z.hint}</div>
+                      </button>
+                    )
+                  })}
+                </div>
+                {errors.delivery_zone && <p className="mt-1 font-body text-xs text-[#8B4A2E]">{errors.delivery_zone}</p>}
+                <p className="mt-2 font-body text-xs text-[#676A61]">
+                  A flat delivery charge is added to your order: NPR {DELIVERY_ZONES.inside_valley.chargeNpr} inside Kathmandu
+                  Valley, NPR {DELIVERY_ZONES.outside_valley.chargeNpr} outside the Valley.
+                </p>
               </div>
 
               <div>
@@ -221,13 +270,27 @@ export default function Checkout() {
                     <span className="text-[#676A61]">
                       {item.productName} ({item.variantLabel}) × {item.quantity}
                     </span>
-                    <span className="text-[#22231F] font-semibold">NPR {item.unitPriceNpr * item.quantity}</span>
+                    <span className="text-[#22231F] font-semibold">NPR {roundNpr(item.unitPriceNpr * item.quantity)}</span>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-[#E8DDCD] pt-4 flex justify-between">
+              <div className="border-t border-[#E8DDCD] pt-4 space-y-2 font-body text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[#676A61]">Subtotal</span>
+                  <span className="text-[#22231F] font-semibold">NPR {subtotalNpr}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-[#676A61]">
+                    Delivery{deliveryZone && ` (${DELIVERY_ZONES[deliveryZone].label})`}
+                  </span>
+                  <span className="text-[#22231F] font-semibold text-right">
+                    {deliveryZone ? `NPR ${deliveryCharge}` : 'Choose delivery area'}
+                  </span>
+                </div>
+              </div>
+              <div className="border-t border-[#E8DDCD] mt-4 pt-4 flex justify-between">
                 <span className="font-body font-semibold text-[#22231F]">Total</span>
-                <span className="font-display font-black text-xl text-[#264F24]">NPR {subtotalNpr}</span>
+                <span className="font-display font-black text-xl text-[#264F24]">NPR {roundNpr(subtotalNpr + deliveryCharge)}</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { roundNpr, useCart } from '../context/CartContext'
+import { DELIVERY_ZONES } from '../lib/delivery'
 
 export default function Cart() {
   const { items, subtotalNpr, setQuantity, removeItem } = useCart()
@@ -31,7 +32,12 @@ export default function Cart() {
                     )}
                     <div className="flex-1">
                       <div className="font-body font-semibold text-sm text-[#22231F]">{item.productName}</div>
-                      <div className="font-body text-xs text-[#676A61]">{item.variantLabel} · NPR {item.unitPriceNpr}</div>
+                      <div className="font-body text-xs text-[#676A61]">
+                        {item.variantLabel} · NPR {item.unitPriceNpr}
+                        {item.listPriceNpr != null && item.listPriceNpr > item.unitPriceNpr && (
+                          <span className="ml-1.5 line-through">NPR {item.listPriceNpr}</span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center border-2 border-[#E8DDCD] rounded-xl overflow-hidden">
                       <button
@@ -51,7 +57,7 @@ export default function Cart() {
                       </button>
                     </div>
                     <div className="w-24 text-right font-display font-black text-sm text-[#264F24]">
-                      NPR {item.unitPriceNpr * item.quantity}
+                      NPR {roundNpr(item.unitPriceNpr * item.quantity)}
                     </div>
                     <button
                       onClick={() => removeItem(item.variantId)}
@@ -68,6 +74,10 @@ export default function Cart() {
                 <span className="font-body text-sm text-[#676A61]">Subtotal</span>
                 <span className="font-display font-black text-2xl text-[#264F24]">NPR {subtotalNpr}</span>
               </div>
+              <p className="mt-2 font-body text-xs text-[#676A61] text-right">
+                Delivery charge added at checkout: NPR {DELIVERY_ZONES.inside_valley.chargeNpr} inside Kathmandu Valley, NPR{' '}
+                {DELIVERY_ZONES.outside_valley.chargeNpr} outside.
+              </p>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <Link

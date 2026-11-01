@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { api, type Product } from '../lib/api'
+import { api, currentPrice, type Product } from '../lib/api'
 import { useCart } from '../context/CartContext'
 import loaf from './../../assets/Protein-Loaf.png'
 import chef from './../../assets/Chef.png'
@@ -222,7 +222,8 @@ export default function Home() {
     productSlug: featuredProduct!.slug,
     productName: featuredProduct!.name,
     variantLabel: retailVariant!.label,
-    unitPriceNpr: retailVariant!.price_npr as number,
+    unitPriceNpr: currentPrice(retailVariant!) as number,
+    listPriceNpr: retailVariant!.price_npr as number,
     image: featuredImage,
   })
   const handleAddToCart = () => {
@@ -387,7 +388,15 @@ export default function Home() {
                 )}
                 {retailVariant?.price_npr != null && (
                   <span className="px-3 py-1.5 rounded-full bg-[#E8DDCD] font-body text-xs font-semibold text-[#22231F]">
-                    NPR {retailVariant.price_npr}
+                    NPR {currentPrice(retailVariant)}
+                    {retailVariant.discounted_price_npr != null && (
+                      <span className="ml-1.5 font-normal text-[#676A61] line-through">NPR {retailVariant.price_npr}</span>
+                    )}
+                  </span>
+                )}
+                {featuredProduct?.discount && retailVariant?.discounted_price_npr != null && (
+                  <span className="px-3 py-1.5 rounded-full bg-[#8B4A2E] text-white font-body text-xs font-bold">
+                    {featuredProduct.discount.percent}% OFF{featuredProduct.discount.label ? ` · ${featuredProduct.discount.label}` : ''}
                   </span>
                 )}
                 <span className="px-3 py-1.5 rounded-full bg-[#264F24]/10 text-[#264F24] font-body text-xs font-semibold">

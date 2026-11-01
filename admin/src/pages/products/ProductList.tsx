@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom'
 import { api, type Product } from '../../lib/api'
 import Layout from '../../components/Layout'
 
+function SaleBadge({ percent }: { percent: number }) {
+  return (
+    <span className="ml-2 px-2 py-0.5 rounded-full bg-[#8B4A2E] text-white font-body text-xs font-bold align-middle">
+      -{percent}%
+    </span>
+  )
+}
+
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -49,7 +57,10 @@ export default function ProductList() {
           <div key={product.id} className="bg-white rounded-2xl border border-[#E8DDCD] p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="font-body text-sm font-semibold text-[#22231F] break-words">{product.name}</div>
+                <div className="font-body text-sm font-semibold text-[#22231F] break-words">
+                  {product.name}
+                  {product.discount && <SaleBadge percent={product.discount.percent} />}
+                </div>
                 <div className="font-body text-xs text-[#676A61] mt-0.5 break-all">
                   {product.sku} · {product.variants.length} variant{product.variants.length === 1 ? '' : 's'}
                 </div>
@@ -94,7 +105,10 @@ export default function ProductList() {
           <tbody className="divide-y divide-[#E8DDCD]">
             {products.map((product) => (
               <tr key={product.id}>
-                <td className="px-5 py-3 font-body text-sm text-[#22231F] font-semibold">{product.name}</td>
+                <td className="px-5 py-3 font-body text-sm text-[#22231F] font-semibold">
+                  {product.name}
+                  {product.discount && <SaleBadge percent={product.discount.percent} />}
+                </td>
                 <td className="px-5 py-3 font-body text-sm text-[#676A61]">{product.sku}</td>
                 <td className="px-5 py-3 font-body text-sm text-[#676A61]">{product.slug}</td>
                 <td className="px-5 py-3 font-body text-sm">{product.is_available ? '● Available' : 'Unavailable'}</td>

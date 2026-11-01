@@ -6,9 +6,17 @@ export interface ProductVariant {
   label: string
   pack_size: string | null
   price_npr: number | null
+  // set only while the product has an active discount; price_npr stays the list price
+  discounted_price_npr: number | null
   is_enquiry_only: boolean
   stock_qty: number
   sort_order: number
+}
+
+export interface ProductDiscount {
+  percent: number
+  label: string | null
+  ends_at: string | null
 }
 
 export interface ProductImage {
@@ -43,6 +51,7 @@ export interface Product {
   is_available: boolean
   images: ProductImage[]
   variants: ProductVariant[]
+  discount: ProductDiscount | null
   // present only on the detail endpoint
   description?: string
   ingredients?: Record<string, string[]>
@@ -62,6 +71,7 @@ export interface OrderItem {
   product_name: string
   variant_label: string | null
   unit_price_npr: number
+  discount_percent: number | null
   quantity: number
   line_total_npr: number
 }
@@ -78,11 +88,18 @@ export interface Order {
   status: string
   payment_method: string | null
   payment_status: string
+  delivery_zone: 'inside_valley' | 'outside_valley' | null
+  delivery_charge_npr: number
   subtotal_npr: number
   total_npr: number
   created_at: string
   updated_at: string
   items?: OrderItem[]
+}
+
+/** The price a customer pays right now (the backend charges the same). */
+export function currentPrice(variant: ProductVariant): number | null {
+  return variant.discounted_price_npr ?? variant.price_npr
 }
 
 function imageUrl(url: string): string {
@@ -96,7 +113,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(body.error || `Request failed (${res.status})`)
+    const firstFieldError = body.errors ? Object.values(body.errors)[0] : undefined
+    throw new Error(body.error || (firstFieldError as string | undefined) || `Request failed (${res.status})`)
   }
   if (res.status === 204) return undefined as T
   return res.json()
@@ -109,6 +127,7 @@ export const api = {
     customer: { name: string; email?: string; phone: string; address: string; city?: string }
     items: { variant_id: number; quantity: number }[]
     payment_method: 'esewa' | 'stripe' | 'cod'
+    delivery_zone: 'inside_valley' | 'outside_valley'
     notes?: string
   }) => request<Order>('/api/orders', { method: 'POST', body: JSON.stringify(payload) }),
   getOrder: (orderNumber: string, phone: string) =>
