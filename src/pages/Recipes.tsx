@@ -1,28 +1,29 @@
+// Titles and IDs match the channel's shorts: https://www.youtube.com/@TheNextProteinNepal/shorts
 const recipes = [
   {
-    title: 'Choila Recipe',
+    title: 'The Next Protein Nepal Choila Recipe',
     videoId: 'oyE5jrAA18Y',
-    desc: 'Discover a delicious Nepali twist with The Next Protein Choila Recipe! Smoky, spiced seitan mixed with mustard oil and traditional Nepali herbs.',
+    desc: 'A delicious Nepali twist: smoky, spiced seitan mixed with mustard oil and traditional Nepali herbs.',
   },
   {
-    title: 'Noodles Recipe',
+    title: 'The Next Protein Nepal Noodles Recipe!',
     videoId: 'Bx8ngsuJvc8',
-    desc: 'The Next Protein Nepal Noodles Recipe! Seitan stir-fried with noodles and fresh vegetables in a bold, flavorful Nepali-style sauce.',
+    desc: 'Seitan stir-fried with noodles and fresh vegetables in a bold, flavorful Nepali-style sauce.',
   },
   {
-    title: 'Chilli Recipe',
+    title: 'The Next Protein Nepal Protein Loaf Chilli Recipe!',
     videoId: '8OyGWwl3YZg',
-    desc: 'The Next Protein Nepal Protein Loaf Chilli Recipe! Crispy seitan pieces tossed with peppers, onions and a spicy, tangy chilli sauce.',
+    desc: 'Crispy seitan pieces tossed with peppers, onions and a spicy, tangy chilli sauce.',
   },
   {
-    title: 'Biryani Recipe',
-    videoId: 'RAzBHarjYGg',
-    desc: 'The Next Protein Nepal Biryani Recipe! Fragrant basmati rice layered with spiced seitan, aromatic herbs and warming spices.',
+    title: 'The Next Protein Nepal Biryani Recipe!',
+    videoId: '8e3tsQR9quM',
+    desc: 'Fragrant basmati rice layered with spiced seitan, aromatic herbs and warming spices.',
   },
   {
-    title: 'Protein Loaf Curry',
+    title: 'The Next Protein Nepal Protein Loaf Curry!',
     videoId: 'RAzBHarjYGg',
-    desc: 'The Next Protein Nepal Protein Loaf Curry! Hearty seitan pieces simmered in a traditional Nepali curry with aromatic spices.',
+    desc: 'Hearty seitan pieces simmered in a traditional Nepali curry with aromatic spices.',
   },
 ]
 
@@ -51,14 +52,16 @@ export default function Recipes() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {recipes.map((recipe) => (
               <article
-                key={recipe.title}
+                key={recipe.videoId}
                 className="group bg-white rounded-2xl overflow-hidden border border-[#E8DDCD] hover:shadow-lg transition-shadow"
               >
                 <div className="aspect-[9/16] bg-[#E8DDCD]">
                   <iframe
                     className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${recipe.videoId}`}
+                    // Domain must be allowed by frame-src in vercel.json's CSP, or production blocks it.
+                    src={`https://www.youtube-nocookie.com/embed/${recipe.videoId}`}
                     title={recipe.title}
+                    loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
